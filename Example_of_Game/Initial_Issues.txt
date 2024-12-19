@@ -1,0 +1,16 @@
+Issue 1: Create a basic window and load tiles for the map.
+Task: Use Pygame to create a window of size 800x600.
+Add tiles from Sprites/Sprites_Environment to create a map.
+
+Issue 2: Animate a rectangle with 8-directional movement.
+Task: Create a rectangle (64x64) and move it up, down, left, and right based on key input.
+Goal: Implement 8-directional movement.
+
+Issue 3: Animate the player sprite using Char_003.png.
+Task: Access the player sprite frames using the subsurface method.
+Animate the player for up, down, left, and right movement.
+
+Issue 4: Implement the idle state using Char_003_Idle.png.
+Task: Display the first row of the idle sprite when no movement keys are pressed.
+
+After these Issues , Main Issues will start . They will be for the main.py , player.py ,pet.py , enemy.py , building.py , etc 

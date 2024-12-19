@@ -1,0 +1,89 @@
+###Base version of Game : 
+You can Open Swarmshot Folder in V S Code and then run main.py file.
+Map of 50X50 tiles each of 16X16 pixel size.
+The game is currently Just the main Player moving on the map. Animated via spritesheet.
+
+###Final Version of Game :
+In Example_of_Game folder , run the example.py file alone.
+Here I aim to tell mechanics of game . 
+
+The game is Top-down zombie horde survivor.
+The scientist , weapons , enemies , buildings are all rendered through Spritesheets.
+because Spritesheets give optimisation.
+
+Gameplay:
+Map Size: 50x50 grid, each tile being 16x16 pixels (adjustable based on resolution).
+Player Spawn Point: Center of the map (25, 25 in tile coordinates).
+Environment: The map is a simple desert .
+The game is played on a big map of 50X50 tiles . Player cannot move outside the map bounds . 
+Player is a scientist who has to end zombie apocalypse. He kills zombies with his high-tech advanced Technology.
+Player uses Shop to upgrade his tools i.e :  buy new weapons , pets , buildings.
+
+
+Player :  2x2 tiles size
+Movement: Moves in 8 directions (up, down, left, right, and diagonals) with a speed of 5 tiles per second.
+Health: Starts with 30 HP.
+Player is a Goofy scientist can hold 6 weapons at max.
+Scientist can hold 2 pets at max.
+Scientist has health, movement speed, and can own pets and weapons.
+Scientist can just move around the map and also remain Idle. 
+So sprites associated with 4-directional movement and idle should be present.(However Scientist can move in 8 directions)
+If scientist collides(overlaps) with enemy , his health decreases by the damage amount of enemy .
+If scientist health drops below zero , Game Over.
+
+Wave system: 
+Game consists of 20 waves.
+Each wave different types of enemies and different number of enemies will be deployed randomly on map . Enemies will be deployed randomly but away from PlAYER .
+Enemies cannot be deployed on the portion occupied by building .
+A wave has following property: Enemy type and Number .
+Each wave lasts untill all enemies are not dead . (i.e total Number of enemies left = zero )
+After 20 waves are completed , The game is won by player.
+
+Shop System: After each wave is over,The screen is overlayed by a shop which displays some cards , a shop randomly gives 4 cards to choose from , Player can choose using mouse . Player can choose only 2 cards.
+cards can be defense buildings , pets , weapons . Cards offer these things randomly , it could be any type of building , pet , weapons .
+If Player has max weapons or pets he has to discard any of them  , to Equip new ones .
+Discarded pet will be eaten by zombies.(its health will be 20HP and decrease and die(remove from Game) .
+
+Pets: 1X1 tile size
+Pets are dynamic wrt scientist and they are like the Spring-arm of Unreal Engine or Unity.
+Pets move with the scientist and stay around the scientist.
+Pets dont die . They dont have health and cannot be damaged by zombies(enemies) .
+Pets are a little farther(4 tiles away) from the player so that the Player weapon can be seen .
+If one pet equipped , then it is at right side of player , 
+IF 2 PETS , one at right and other at left . 
+Different Pets have different properties , some attack the zombies  , some give power buffs (like +5% attack) , some are medics(add health to player) , some drop bombs ,etc.
+
+Weapons: 1X1 tile size
+If Scientist has weapons they are static wrt to scientist. And located at certain distance from scientist.(Like Brotato game )
+If 1 weapon equipped , it is at left of scientist.
+If 2 weapons , they are at left and right.
+If more weapons they are located in following manner around scientist :  left , right , top-left , top-right , bottom-left , bottom-right .
+Weapons auto-aim and shoots projectiles at the nearest enemy.
+Weapons have following properties : ammo , reload-rate , ammo-distance(Distance after which the bullet will disappear). Bullets disappear after hitting enemy and do damage to enemy.  . This is basic weapon class , all weapons Inherit from this and may have different speciality.
+
+Building: 3x3 tiles 
+after a Building is choosen , it will be temporarily at the centre of game screen , and then using the W,A,S,D keys or the arrow keys , it can be moved wherever player wants.
+After "Space" is pressed , the building is established there . and then the Next wave begins .
+These building are inspired by buildings of clash of clans , they can be cannon , archer tower, tesla tower etc . 
+These defense buildings attack only when the enemies are in the range of Building .
+So , a building has : LOCATION(x,y) , fire-rate , range , damage per fire .
+Enemies do not spawn on the land occupied by building . also Building cannot be established on other building / occupied land .
+
+Enemy: Varying sizes (weakest- 1x1 , tank -2X2 , ranged-1X1 )
+Basic Enemy: Occupies 1x1 tile, low health, and moves directly toward the player.
+Tank Enemy: Occupies 2x2 tiles, high health, slow movement.
+Ranged Enemy: Occupies 1x1 tile, shoots projectiles toward the player at intervals.
+You may create different types of enemies .
+Spawn Points: Random locations at the edges of the map.
+Enemies are zombies . They move towards the scientist .
+Boss enemies can have specialised enemy behavior , like dashing at player after certain Interval or spawning new enemies or different attack pattern.
+Enemies have health, speed and damage amount .They damage player when they collide(overlap) with player. While overlapping they damage by the damage amount per second.
+Enemies are damaged by the weapon of player( not the weapon , but by the bullets of weapon).
+Enemies are killed when their health falls below zero and they are deleted from Game .
+
+
+
+
+
+
+
