@@ -1,6 +1,6 @@
 ###Base version of Game : 
 You can Open Swarmshot Folder in V S Code and then run main.py file.
-Map of 50X50 tiles each of 16X16 pixel size.
+Map of 44X44 tiles each of 16X16 pixel size.
 The game is currently Just the main Player moving on the map. Animated via spritesheet.
 
 ###Final Version of Game :
@@ -12,8 +12,8 @@ The scientist , weapons , enemies , buildings are all rendered through Spriteshe
 because Spritesheets give optimisation.
 
 Gameplay:
-Map Size: 50x50 grid, each tile being 16x16 pixels (adjustable based on resolution).
-Player Spawn Point: Center of the map (25, 25 in tile coordinates).
+Map Size: 44x44 grid, each tile being 16x16 pixels (adjustable based on resolution).
+Player Spawn Point: Center of the map (22, 22 in tile coordinates).
 Environment: The map is a simple desert .
 The game is played on a big map of 50X50 tiles . Player cannot move outside the map bounds . 
 Player is a scientist who has to end zombie apocalypse. He kills zombies with his high-tech advanced Technology.
@@ -32,17 +32,17 @@ If scientist collides(overlaps) with enemy , his health decreases by the damage 
 If scientist health drops below zero , Game Over.
 
 Wave system: 
-Game consists of 20 waves.
+Game consists of 12 waves.
 Each wave different types of enemies and different number of enemies will be deployed randomly on map . Enemies will be deployed randomly but away from PlAYER .
 Enemies cannot be deployed on the portion occupied by building .
 A wave has following property: Enemy type and Number .
 Each wave lasts untill all enemies are not dead . (i.e total Number of enemies left = zero )
-After 20 waves are completed , The game is won by player.
+After 12 waves are completed , The game is won by player.
 
 Shop System: After each wave is over,The screen is overlayed by a shop which displays some cards , a shop randomly gives 4 cards to choose from , Player can choose using mouse . Player can choose only 2 cards.
 cards can be defense buildings , pets , weapons . Cards offer these things randomly , it could be any type of building , pet , weapons .
 If Player has max weapons or pets he has to discard any of them  , to Equip new ones .
-Discarded pet will be eaten by zombies.(its health will be 20HP and decrease and die(remove from Game) .
+Discarded pet will be eaten by zombies.(its health will be 20HP and decrease and die(remove from Game)) .
 
 Pets: 1X1 tile size
 Pets are dynamic wrt scientist and they are like the Spring-arm of Unreal Engine or Unity.
