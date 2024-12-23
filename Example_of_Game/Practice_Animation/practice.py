@@ -1,11 +1,8 @@
-# This is the file for basic issues and practice tasks.
+# This is the file for Issue 2.
 # Please use **VS Code** (other editors are fine too if you prefer).
 #
-# **Issue 2**: Animate the character "Char_003.png" on a screen display of size 800x600 using a spritesheet.
-# 
-# **Learning Resources**:
-# - Refer to the `player.py` file for understanding how the character is animated.
-# - Familiarize yourself with the concept of spritesheets and slicing frames using coordinates.
+# Given : An Animated character "Char_003.png" on a screen display of size 800x600 using a spritesheet.
+# **Issue 2**: Replace this character with any of the favourite sprite sheet.
 #
 # **Note**:
 # 1. While referring to any file, use the 'Copy Relative Path' option in VS Code.
