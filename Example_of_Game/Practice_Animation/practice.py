@@ -68,18 +68,25 @@ class Player:
         self.y = y
         self.speed = 4  # Movement speed
 
-        # Load the spritesheet
+        # Load the main spritesheet
         self.sprite_sheet = pygame.image.load("Sprites/Sprites_Player/Char_003.png").convert_alpha()
+        # Load the idle spritesheet
+        self.idle_sprite_sheet = pygame.image.load("Sprites/Sprites_Player/Char_003_Idle.png").convert_alpha()
+
         self.current_frame = 0
         self.frame_timer = 0
         self.frame_delay = 10  # Adjust this for animation speed
 
         # Directions and frames
-        self.direction = "down" #starting direction
+        self.direction = "down"  # Starting direction
         self.frames = self.load_frames()
+        self.idle_frames = self.load_idle_frames()
+
+        # Movement state
+        self.moving = False
 
     def load_frames(self):
-        """Extract frames from spritesheet."""
+        """Extract movement frames from the spritesheet."""
         frames = {
             "up": [],
             "down": [],
@@ -97,40 +104,66 @@ class Player:
 
         return frames
 
+    def load_idle_frames(self):
+        """Extract idle frames from the idle spritesheet."""
+        idle_frames = {
+            "up": [],
+            "down": [],
+            "left": [],
+            "right": []
+        }
+
+        frame_size = 72  # Size of each sprite frame
+        directions = ["down", "left", "right", "up"]  # Order in the spritesheet
+
+        for row, direction in enumerate(directions):
+            for col in range(4):  # 4 frames per direction
+                x, y = col * frame_size, row * frame_size
+                idle_frames[direction].append(self.idle_sprite_sheet.subsurface((x, y, frame_size, frame_size)))
+
+        return idle_frames
+
     def update(self, keys):
         """Update player position and animation based on input."""
-        moving = False
+        self.moving = False  # Reset moving state
 
         # Movement logic
         if keys[pygame.K_UP]:
             self.y -= self.speed
             self.direction = "up"
-            moving = True
-        elif keys[pygame.K_DOWN]:
+            self.moving = True
+        if keys[pygame.K_DOWN]:
             self.y += self.speed
             self.direction = "down"
-            moving = True
+            self.moving = True
         if keys[pygame.K_LEFT]:
             self.x -= self.speed
             self.direction = "left"
-            moving = True
-        elif keys[pygame.K_RIGHT]:
+            self.moving = True
+        if keys[pygame.K_RIGHT]:
             self.x += self.speed
             self.direction = "right"
-            moving = True
+            self.moving = True
 
         # Update animation frame
-        if moving:
-            self.frame_timer += 1
+        self.frame_timer += 1
+        if self.moving:
             if self.frame_timer >= self.frame_delay:
                 self.frame_timer = 0
                 self.current_frame = (self.current_frame + 1) % len(self.frames[self.direction])
         else:
-            self.current_frame = 0  # Reset to the first frame when idle
+            if self.frame_timer >= self.frame_delay:
+                self.frame_timer = 0
+                self.current_frame = (self.current_frame + 1) % len(self.idle_frames[self.direction])
 
     def draw(self, surface):
         """Draw the player on the screen."""
-        surface.blit(self.frames[self.direction][self.current_frame], (self.x, self.y))
+        if self.moving:
+            # Draw moving animation
+            surface.blit(self.frames[self.direction][self.current_frame], (self.x, self.y))
+        else:
+            # Draw idle animation
+            surface.blit(self.idle_frames[self.direction][self.current_frame], (self.x, self.y))
 
 # Main game loop
 def main():
