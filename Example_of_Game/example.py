@@ -45,24 +45,68 @@ def distance(a, b):
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((TILE_SIZE * 2, TILE_SIZE * 2))
-        self.image.fill(BLUE)
+        self.sprite_sheet = pygame.image.load("Sprites/Sprites_Pet/PET_Fox.png").convert_alpha()
+
+        # Animation settings
+        self.frame_width = 72   # Update to match your sprite sheet's frame width
+        self.frame_height = 72  # Update to match your sprite sheet's frame height
+        self.frames_per_row = 4  # Update to match your sprite sheet layout
+        self.current_frame = 0
+        self.animation_speed = 10  # Adjust for animation speed
+        self.frame_timer = 0
+
+        # Extract animation frames
+        self.frames = self.load_frames()
+
+        # Initial player state
+        self.image = self.frames[0]
         self.rect = self.image.get_rect(center=(x, y))
         self.health = PLAYER_HEALTH
         self.speed = PLAYER_SPEED
-        self.weapons = []
-        self.pets = []
+        self.moving = False
+
+    def load_frames(self):
+        """Extract frames from the sprite sheet."""
+        frames = []
+        for row in range(self.frames_per_row):
+            for col in range(self.frames_per_row):
+                x = col * self.frame_width
+                y = row * self.frame_height
+                frame = self.sprite_sheet.subsurface((x, y, self.frame_width, self.frame_height))
+                frames.append(frame)
+        return frames
 
     def update(self, keys_pressed):
         dx, dy = 0, 0
-        if keys_pressed[pygame.K_w]: dy -= self.speed
-        if keys_pressed[pygame.K_s]: dy += self.speed
-        if keys_pressed[pygame.K_a]: dx -= self.speed
-        if keys_pressed[pygame.K_d]: dx += self.speed
+        self.moving = False  # Reset moving state
 
-        # Movement Bounds
+        # Movement logic
+        if keys_pressed[pygame.K_w]: 
+            dy -= self.speed
+            self.moving = True
+        if keys_pressed[pygame.K_s]: 
+            dy += self.speed
+            self.moving = True
+        if keys_pressed[pygame.K_a]: 
+            dx -= self.speed
+            self.moving = True
+        if keys_pressed[pygame.K_d]: 
+            dx += self.speed
+            self.moving = True
+
+        # Update position with bounds
         self.rect.x = max(0, min(MAP_WIDTH - self.rect.width, self.rect.x + dx))
         self.rect.y = max(0, min(MAP_HEIGHT - self.rect.height, self.rect.y + dy))
+
+        # Animation logic
+        self.frame_timer += 1
+        if self.moving:
+            if self.frame_timer >= self.animation_speed:
+                self.frame_timer = 0
+                self.current_frame = (self.current_frame + 1) % len(self.frames)
+            self.image = self.frames[self.current_frame]
+        if not self.moving:
+            self.image = self.frames[0]  # Set to a dedicated idle frame if available.
 
 
 # --- Enemy Class ---
