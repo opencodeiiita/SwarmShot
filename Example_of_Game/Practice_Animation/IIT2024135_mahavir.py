@@ -37,6 +37,7 @@ class Player:
         self.frame_delay = 10  # Adjust this for animation speed
 
         # Directions and frames
+      
         self.direction = "down"  # Starting direction
         self.current_action = "down_idle"
         self.frames = self.load_frames()
