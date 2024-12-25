@@ -1,44 +1,3 @@
-# This is the file for Issue 2.
-# Please use **VS Code** (other editors are fine too if you prefer).
-#
-# Given : An Animated character "Char_003.png" on a screen display of size 800x600 using a spritesheet.
-# **Issue 2**: Replace this character with any of the favourite sprite sheet.
-#
-# **Note**:
-# 1. While referring to any file, use the 'Copy Relative Path' option in VS Code.
-#    The path should always be relative to the **main repository** (root directory: `SwarmShot` folder).
-#    Example: `Sprites\Sprites_Player\Char_003.png`
-# 2. In Python, `\m` and similar sequences are treated as escape characters.
-#    Therefore, always replace `\` with `/` in file paths.
-#    Corrected example: `Sprites/Sprites_Player/Char_003.png`
-
-# **How to Run this?
-# Open the SwarmShot folder in V S Code , open practice.py file from left Explorer Panel .
-# Press Run Code button 
-
-# **Animation Details for Char_003.png**:
-# - The character spritesheet `Sprites/Sprites_Player/Char_003.png` contains 16 images arranged in a 4x4 grid.
-# - The top-left corner of the image is at coordinates (0, 0), and the bottom-right is at (width, height).
-# - The total size of the image is 288 x 288 pixels. Each character frame is 72 x 72 pixels (288/4 = 72).
-#
-# **Accessing Frames**:
-# - Each frame corresponds to a single character pose in the grid.
-# - To access any frame:
-#   (x, y) = ((column - 1) * frame_width, (row - 1) * frame_height)
-# - Frame Examples:
-#   - Top-left frame (1st row, 1st column): (0, 0, 72, 72)
-#   - Frame in the 1st row, 2nd column: (72, 0, 72, 72)
-#   - Frame in the 4th row, 3rd column: ((4 - 1) * 72, (3 - 1) * 72, 72, 72) => (216, 144, 72, 72)
-
-# **Implementation Steps**:
-# 1. Use the `pygame.image.load()` function to load the spritesheet (`Char_003.png`) as a surface.
-# 2. Use `pygame.Surface.subsurface()` or slicing logic to extract individual frames.
-# 3. Update the frame index in a loop to create animation for movement.
-# 4. Implement an idle animation by playing the first frame or looping a subset of frames when the character isn’t moving.
-
-# **Next Steps**:
-# Now, let’s animate the player character using the spritesheet "Sprites/Sprites_Player/Char_003.png".
-
 import pygame
 import sys, cv2
 
@@ -68,7 +27,7 @@ class Player:
         #Pet folder is set here 
         folder = "Sprites/Sprites_Pet/"
 
-        #Different pet can be changed here byt just writing there name
+        #Different pet can be changed here by just writing there name
         character = "PET_Racoon.png"
         char = character[:-4]
         
