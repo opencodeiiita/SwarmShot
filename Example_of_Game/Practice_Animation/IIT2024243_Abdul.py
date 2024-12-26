@@ -1,5 +1,5 @@
 import pygame
-import sys, cv2
+import sys
 
 # Initialize Pygame
 pygame.init()
@@ -28,24 +28,11 @@ class Player:
         folder = "Sprites/Sprites_Pet/"
 
         #Different pet can be changed here by just writing there name
-        character = "PET_Racoon.png"
-        char = character[:-4]
+        character = "PET_Fox.png"
         
-        #As the whole image has idle and moving frames, I had split the image into two other images just like the char03.png
-        image = cv2.imread(f"{folder}{character}", cv2.IMREAD_UNCHANGED)
-
-        #cropping for the images is done here
-        frame, rows_to_crop = 32, 4
-        idle_img = image[0:rows_to_crop*frame, 0:image.shape[1]]
-        moving_img = image[(rows_to_crop+1)*frame:, :]  # Removed +1 from cropping
-
-        #images are saved in the same directory of Pet's
-        cv2.imwrite(f"{folder}{char}_Idle.png", idle_img)
-        cv2.imwrite(f"{folder}{char}_Movement.png", moving_img)
-
         # Load spritesheets
-        self.sprite_sheet = pygame.image.load(f"{folder}{char}_Movement.png").convert_alpha()
-        self.idle_sprite_sheet = pygame.image.load(f"{folder}{char}_Idle.png").convert_alpha()
+        self.sprite_sheet = pygame.image.load(f"{folder}{character}").convert_alpha()
+        self.idle_sprite_sheet = pygame.image.load(f"{folder}{character}").convert_alpha()
 
 
         self.current_frame = 0
@@ -70,15 +57,19 @@ class Player:
         }
 
         frame_size = 32  # Size of each sprite frame
+        
+        #directions were changes to adjust frames of the image
         directions = ["down", "left", "right", "up"]  # Order in the spritesheet
 
+        start_row = 5 # I count the rows as 0, 1 , 2 ....
+
+        print("Frames: ")
         for direction_index, direction in enumerate(directions):
             for row_offset in range(2):  # Each direction uses 2 rows
                 for col in range(4):  # Each row has 4 columns
-                    x = col * frame_size
-                    y = (direction_index * 2 + row_offset) * frame_size
+                    x = (col * frame_size)
+                    y = ((direction_index * 2 + row_offset) * frame_size) + (start_row * frame_size) #Just had to add the y offset
                     frames[direction].append(self.sprite_sheet.subsurface((x, y, frame_size, frame_size)))
-
         return frames
 
     def load_idle_frames(self):
@@ -93,6 +84,7 @@ class Player:
         frame_size = 32  # Size of each sprite frame
         directions = ["down", "right", "left", "up"]  # Order in the spritesheet
 
+        print("Idle Frames: ")
         for row, direction in enumerate(directions):
             for col in range(4):  # 4 frames per direction
                 x, y = col * frame_size, row * frame_size
@@ -144,7 +136,10 @@ class Player:
             current_frames = self.idle_frames[self.direction]
 
         frame_index = self.current_frame % len(current_frames)
-        surface.blit(current_frames[frame_index], (self.x, self.y))
+
+        #The Pet was small so enlarged it from 32 to 64.
+        enlarge = pygame.transform.scale(current_frames[frame_index], (64,64))
+        surface.blit(enlarge, (self.x, self.y))
 
 # Main game loop
 def main():
