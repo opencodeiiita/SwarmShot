@@ -86,7 +86,7 @@ class Player:
 
     def draw(self, surface):
         """Draw the player on the screen, scaled up."""
-        scaled_image = pygame.transform.scale(self.frames[self.current_action][self.current_frame], (64, 64))  # Scale up
+        scaled_image = pygame.transform.scale(self.frames[self.current_action][self.current_frame], (128, 128))  # Scale up to 4x
         surface.blit(scaled_image, (self.x, self.y))
 
 # Main game loop
