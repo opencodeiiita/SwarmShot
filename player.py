@@ -6,7 +6,8 @@ class Player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.speed = 4  # Movement speed
+        self.speed = 3  # Movement speed
+        self.health= 100 # player health
 
         # Load the sprite sheet
         self.sprite_sheet = pygame.image.load("Sprites/Sprites_Player/mega_scientist_walk.png").convert_alpha()
@@ -22,7 +23,6 @@ class Player:
         """Extract frames from sprite sheet for animation."""
         frames = {
             #Explaintation: (x,y,Width,Height)
-            #Top-left of sprite-sheet is 0,0 cordinate
             #In properties , you see mega_scientist_walk is 576*256 pixels
             #64X64 is each grid
             "up": [self.sprite_sheet.subsurface((i * 64, 0, 64, 64)) for i in range(8)],
@@ -34,27 +34,38 @@ class Player:
 
     def update(self, keys):
         """Update player position and animation based on input."""
+        dx, dy = 0, 0  # Movement vector components
         moving = False
 
         # Movement logic
         #up-down 
         if keys[pygame.K_UP] or keys[pygame.K_w]:
-            self.y -= self.speed
+            dy -= 1
             self.direction = "up"
             moving = True
         elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            self.y += self.speed
+            dy += 1
             self.direction = "down"
             moving = True
         #left-right
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.x -= self.speed
+            dx -= 1
             self.direction = "left"
             moving = True
         elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.x += self.speed
+            dx += 1
             self.direction = "right"
             moving = True
+
+        # Normalize the movement vector
+        if dx != 0 or dy != 0:  # If there's movement
+            magnitude = (dx ** 2 + dy ** 2) ** 0.5
+            dx /= magnitude
+            dy /= magnitude
+
+        # Update player position
+        self.x += dx * self.speed
+        self.y += dy * self.speed
 
         # Update animation frame
         if moving:
@@ -66,5 +77,13 @@ class Player:
             self.current_frame = 0  # Idle state resets to the first frame
 
     def draw(self, surface):
-        """Draw the player sprite on the screen."""
-        surface.blit(self.frames[self.direction][self.current_frame], (self.x, self.y))
+        # Draw the actual player sprite
+        sprite = self.frames[self.direction][self.current_frame]
+        sprite_rect = sprite.get_rect(center=(self.x, self.y))
+        surface.blit(sprite, sprite_rect.topleft)
+
+        # Draw a pink rectangle to visualize the player's position
+        rect_width, rect_height = 64, 64  # Assuming the player sprite size is 64x64
+        pygame.draw.rect(surface, (255, 0, 255), (self.x - rect_width // 2, self.y - rect_height // 2, rect_width, rect_height), 2)
+
+
