@@ -13,6 +13,7 @@ class Enemy:
         self.current_frame = 0
         self.frame_timer = 0
         self.frame_delay = 10  # Adjust for animation speed
+        self.look_right=True
 
     def load_frame_sheet(self, sprite_file_path, frame_width, frame_height, rows, cols):
         """Loads a sprite sheet and returns a list of frames."""
@@ -33,7 +34,10 @@ class Enemy:
         """Update the enemy state, position, and check for collisions."""
         # Calculate the player's center
         player_center = (player.x, player.y)  
-
+        if(player.x<self.x):
+            self.look_right=False
+        else:
+            self.look_right=True
         # Calculate the enemy's center
         current_frame = self.frames[self.current_action][self.current_frame]
         enemy_center = (self.x ,self.y)
@@ -66,8 +70,11 @@ class Enemy:
     def draw(self, surface):
         """Draw the current frame of the enemy on the screen."""
         sprite = self.frames[self.current_action][self.current_frame]
+
+        if(self.look_right==False):
+            sprite = pygame.transform.flip(sprite, True, False)
         sprite_rect = sprite.get_rect(center=(self.x, self.y))
-    
+        
         # Draw the sprite
         surface.blit(sprite, sprite_rect.topleft)
 
