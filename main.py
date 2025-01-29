@@ -34,7 +34,7 @@ player = Player(MAP_WIDTH // 2, MAP_HEIGHT // 2)
 
 # Define Enemy Wave Data
 waves = [
-    {'enemies': [(FlyingEye, 10, 0.4),(Mushroom, 5, 1),(EvilWizard, 1, 1)], 'message': "Wave 1: 30 Flying Eyes!"},
+    {'enemies': [(EvilWizard, 1, 2)], 'message': "Wave 1: 30 Flying Eyes!"},
     {'enemies': [(FlyingEye, 30, 0.5), (Goblin, 10, 2)], 'message': "Wave 2: 30 Flying Eyes, 10 Goblins!"},
     {'enemies': [(FlyingEye, 30, 0.6), (Goblin, 10, 1.5)], 'message': "Wave 3: 30 Flying Eyes, 10 Goblins!"},  # Add more waves as needed
     {'enemies': [(FlyingEye, 90, 0.2), (Goblin, 30, 0.5), (Mushroom, 20, 1), (Skeleton, 40, 3)], 'message': "Wave 12: 90 Flying Eyes, 30 Goblins, 20 Mushrooms, 40 Skeletons!"}

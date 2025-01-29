@@ -1,12 +1,13 @@
 import pygame
 
 class Enemy:
-    def __init__(self, x, y, speed, health, damage, scale=1):
+    def __init__(self, x, y, speed, health, damage, acceptance_radius, scale=1):
         self.x = x
         self.y = y
         self.speed = speed
         self.health = health
         self.damage = damage  # Damage per second
+        self.acceptance_radius = acceptance_radius  # Stop moving when within this distance
         self.scale = scale
         self.frames = {}  # Dictionary to hold frames for different actions
         self.current_action = 'idle'
@@ -32,27 +33,34 @@ class Enemy:
 
     def update(self, player):
         """Update the enemy state, position, and check for collisions."""
-        # Calculate the player's center
-        player_center = (player.x, player.y)  
-        if(player.x<self.x):
-            self.look_right=False
-        else:
-            self.look_right=True
-        # Calculate the enemy's center
-        current_frame = self.frames[self.current_action][self.current_frame]
-        enemy_center = (self.x ,self.y)
+        
+        # Calculate the player's center and enemy's center
+        player_center = (player.x, player.y)
+        enemy_center = (self.x ,self.y)  
 
         # Calculate direction towards the player's center
         dx, dy = player_center[0] - enemy_center[0], player_center[1] - enemy_center[1]
         distance = (dx ** 2 + dy ** 2) ** 0.5
 
-        if distance != 0:
+        if(player.x<self.x):
+            self.look_right=False
+        else:
+            self.look_right=True
+
+        current_frame = self.frames[self.current_action][self.current_frame]
+        
+        if distance > self.acceptance_radius:  # Move only if outside acceptance radius
             dx /= distance
             dy /= distance
+            # Move enemy towards player's center
+            self.x += dx * self.speed
+            self.y += dy * self.speed
 
-        # Move enemy towards player's center
-        self.x += dx * self.speed
-        self.y += dy * self.speed
+            # Update direction only when moving
+            if dx > 0:
+                self.look_right = True
+            elif dx < 0:
+                self.look_right = False
 
         # Update animation frame
         self.frame_timer += 1
@@ -86,21 +94,21 @@ class Enemy:
 # Specific enemy classes with their own load_frames functions
 class EvilWizard(Enemy):
     def __init__(self, x, y):
-        super().__init__(x, y, speed=2, health=300, damage=5, scale=1.5)
+        super().__init__(x, y, speed=2, health=300, damage=5, acceptance_radius=10, scale=1.5)
         self.load_frames()
 
     def load_frames(self):
         """Load frames for each action of Evil Wizard."""
         self.frames['attack1'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Evil Wizard/Attack1.png", 250, 250, 1, 8)
-        self.frames['idle'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Evil Wizard/Attack2.png", 250, 250, 1, 8)
+        self.frames['attack2'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Evil Wizard/Attack2.png", 250, 250, 1, 8)
         self.frames['death'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Evil Wizard/Death.png", 250, 250, 1, 7)
-        self.frames['chau'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Evil Wizard/Idle.png", 250, 250, 1, 8)
+        self.frames['idle'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Evil Wizard/Idle.png", 250, 250, 1, 8)
         self.frames['run'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Evil Wizard/Run.png", 250, 250, 1, 8)
         self.frames['takehit'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Evil Wizard/Take hit.png", 250, 250, 1, 3)
 
 class FlyingEye(Enemy):
     def __init__(self, x, y):
-        super().__init__(x, y, speed=1, health=50, damage=1, scale=1)
+        super().__init__(x, y, speed=1, health=50, damage=1, acceptance_radius=5, scale=1)
         self.load_frames()
 
     def load_frames(self):
@@ -113,7 +121,7 @@ class FlyingEye(Enemy):
 # Similar classes for Goblin, Mushroom, and Skeleton
 class Goblin(Enemy):
     def __init__(self, x, y):
-        super().__init__(x, y, speed=2, health=75, damage=3, scale=1)
+        super().__init__(x, y, speed=2, health=75, damage=3, acceptance_radius=5, scale=1)
         self.load_frames()
 
     def load_frames(self):
@@ -126,7 +134,7 @@ class Goblin(Enemy):
 
 class Mushroom(Enemy):
     def __init__(self, x, y):
-        super().__init__(x, y, speed=2, health=200, damage=5, scale=1)
+        super().__init__(x, y, speed=2, health=200, damage=5, acceptance_radius=5, scale=1)
         self.load_frames()
 
     def load_frames(self):
@@ -139,7 +147,7 @@ class Mushroom(Enemy):
 
 class Skeleton(Enemy):
     def __init__(self, x, y):
-        super().__init__(x, y, speed=3, health=100, damage=20, scale=1)
+        super().__init__(x, y, speed=3, health=100, damage=20, acceptance_radius=5, scale=1)
         self.load_frames()
 
     def load_frames(self):
