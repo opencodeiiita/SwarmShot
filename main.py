@@ -2,7 +2,8 @@ import pygame
 import sys
 import random
 from player import Player
-from enemy import FlyingEye, Goblin, Mushroom, Skeleton, EvilWizard
+from enemy import FlyingEye, Goblin, Mushroom, Skeleton, EvilWizard, BigFlyingEye, DashingGoblin
+from weapon import WeaponManager
 
 # Initialize Pygame
 pygame.init()
@@ -32,12 +33,39 @@ clock = pygame.time.Clock()
 # Load Player
 player = Player(MAP_WIDTH // 2, MAP_HEIGHT // 2)
 
+weapon_manager = WeaponManager()
+
 # Define Enemy Wave Data
 waves = [
-    {'enemies': [(EvilWizard, 1, 2)], 'message': "Wave 1: 30 Flying Eyes!"},
-    {'enemies': [(FlyingEye, 30, 0.5), (Goblin, 10, 2)], 'message': "Wave 2: 30 Flying Eyes, 10 Goblins!"},
-    {'enemies': [(FlyingEye, 30, 0.6), (Goblin, 10, 1.5)], 'message': "Wave 3: 30 Flying Eyes, 10 Goblins!"},  # Add more waves as needed
-    {'enemies': [(FlyingEye, 90, 0.2), (Goblin, 30, 0.5), (Mushroom, 20, 1), (Skeleton, 40, 3)], 'message': "Wave 12: 90 Flying Eyes, 30 Goblins, 20 Mushrooms, 40 Skeletons!"}
+    # Introduction waves
+    {
+        'enemies': [(FlyingEye, 8, 1.5),(DashingGoblin, 6, 2)],
+        'message': "Wave 1: Scout Flying Eyes Approaching!"
+    },
+    {
+        'enemies': [(BigFlyingEye, 2, 1.5),(Goblin, 4, 2)],
+        'message': "Wave 2: Mini-Boss!"
+    },
+    {
+        'enemies': [(FlyingEye, 8, 1.5), (Goblin, 5, 2)],
+        'message': "Wave 3: Combined Forces!"
+    },
+    
+    # Mid-game challenge
+    {
+        'enemies': [(Skeleton, 10, 1.5), (FlyingEye, 15, 1)],
+        'message': "Wave 4: Skeletons Join the Fray!"
+    },
+    {
+        'enemies': [(Mushroom, 5, 2), (Goblin, 12, 1), (FlyingEye, 10, 1.2)],
+        'message': "Wave 5: Unrelenting Onslaught!"
+    },
+    
+    # Final wave
+    {
+        'enemies': [(EvilWizard, 2, 3), (Mushroom, 10, 1), (Goblin, 10, 1.5), (Skeleton, 20, 0.8)],
+        'message': "Wave 6: FINAL WAVE: Ultimate Challenge!"
+    }
 ]
 
 class WaveManager:
@@ -46,14 +74,20 @@ class WaveManager:
         self.enemies = []
         self.spawn_timer = 0
         self.wave_message = ""
-        self.message_timer = 0 ########
+        self.message_timer = 0
         self.time_between_waves = 5  # Time in seconds between waves
+        self.wave_completed = False
+        self.wave_cooldown = 0
 
     def start_wave(self):
+        if self.wave_index >= len(waves):
+            return False  # No more waves
+            
         wave_data = waves[self.wave_index]
         self.enemies = []
         self.wave_message = wave_data['message']
-        self.message_timer = pygame.time.get_ticks()  # Start timer for message display
+        self.message_timer = pygame.time.get_ticks()
+        self.wave_completed = False
         
         # Spawn enemies
         for enemy_type, count, spawn_rate in wave_data['enemies']:
@@ -62,21 +96,33 @@ class WaveManager:
                 y = random.randint(0, GRID_SIZE - 1) * TILE_SIZE
                 enemy = enemy_type(x, y)
                 self.enemies.append(enemy)
-                
-                # Set spawn time
                 enemy.spawn_rate = spawn_rate
+        
+        return True
 
     def update(self):
-        if len(self.enemies) == 0:
-            self.wave_index += 1
-            if self.wave_index < len(waves):
-                self.start_wave()
+        # Clean up dead enemies that have completed their death animation
+        self.enemies = [enemy for enemy in self.enemies 
+                        if not (enemy.is_dead and enemy.death_animation_completed)]
+        
+        # Check if wave is complete
+        if len(self.enemies) == 0 and not self.wave_completed:
+            self.wave_completed = True
+            self.wave_cooldown = pygame.time.get_ticks()
+        
+        # Start next wave after cooldown
+        if self.wave_completed:
+            if pygame.time.get_ticks() - self.wave_cooldown > self.time_between_waves * 1000:
+                self.wave_index += 1
+                if not self.start_wave():  # Returns False if no more waves
+                    print("Game Completed!")
+                    return
         
         # Handle enemy spawning
         for enemy in self.enemies:
             if enemy.spawn_rate:
                 enemy.update(player)
-                
+        
     def draw(self, surface):
         # Draw all enemies
         for enemy in self.enemies:
@@ -126,7 +172,11 @@ def main():
         # Render everything
         screen.fill(WHITE)  # Optional fallback color
         render_map()
+        # Update weapons
+        weapon_manager.update(player.x, player.y, wave_manager.enemies)
         player.draw(screen)
+        # Draw weapons
+        weapon_manager.draw(screen)
         wave_manager.draw(screen)  # Draw the enemies
 
         # Display wave message
