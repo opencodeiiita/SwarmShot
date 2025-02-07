@@ -493,3 +493,21 @@ class DashingGoblin(Goblin):
         if new_action != self.current_action:
             self.current_action = new_action
             self.current_frame = 0
+
+class TeleportingMushroom(Mushroom):
+
+        def __init__(self, x, y):
+            super().__init__(x, y)
+            self.teleport_timer = 0 
+
+        def update(self, player):
+            super().update(player)
+            self.teleport_timer += 1
+            if self.teleport_timer > 200:  
+                self.teleport(player)
+                self.teleport_timer = 0
+
+        def teleport(self,player):
+            """Teleport to a random position."""
+            self.x = player.x+random.randint(5, 50) 
+            self.y = player.y+random.randint(5, 30)
