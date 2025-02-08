@@ -2,7 +2,7 @@ import pygame
 import math
 
 class Bullet:
-    def __init__(self, x, y, target_x, target_y, speed=5, damage=30):
+    def __init__(self, x, y, target_x, target_y, speed=5, damage=3000):
         self.x = x
         self.y = y
         self.speed = speed
