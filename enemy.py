@@ -1023,6 +1023,7 @@ class DashingGoblin(Goblin):
             self.current_action = new_action
             self.current_frame = 0
 
+
     def draw(self, surface):
         """Draw the current frame of the enemy on the screen."""
         if self.current_action not in self.frames:
@@ -1046,6 +1047,7 @@ class DashingGoblin(Goblin):
             rotated_projectile = pygame.transform.rotate(projectile['image'],
                                                          -math.degrees(math.atan2(projectile['dy'], projectile['dx'])))
             surface.blit(rotated_projectile, projectile_rect.topleft)
+            
 
 class TeleportingMushroom(Mushroom):
 
