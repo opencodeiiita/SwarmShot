@@ -2,7 +2,7 @@ import pygame
 import sys
 import random
 from player import Player
-from enemy import FlyingEye, Goblin, Mushroom, Skeleton, EvilWizard, BigFlyingEye, DashingGoblin,EnemySwarm
+from enemy import FlyingEye, Goblin, Mushroom, Skeleton, EvilWizard, BigFlyingEye, DashingGoblin,EnemySwarm, TeleportingMushroom
 from weapon import WeaponManager
 
 # Initialize Pygame
@@ -47,26 +47,27 @@ waves = [
         'message': "Wave 2: Mini-Boss!"
     },
     {
-        'enemies': [(FlyingEye, 8, 1.5), (Goblin, 5, 2)],
+        'enemies': [(FlyingEye, 8, 1.5), (Goblin, 5, 2), (TeleportingMushroom, 3, 1)],
         'message': "Wave 3: Combined Forces!"
     },
 
     # Mid-game challenge
     {
-        'enemies': [(Skeleton, 10, 1.5), (FlyingEye, 15, 1)],
+        'enemies': [(Skeleton, 10, 1.5), (FlyingEye, 15, 1), (TeleportingMushroom, 4, 1)],
         'message': "Wave 4: Skeletons Join the Fray!"
     },
     {
-        'enemies': [(Mushroom, 5, 2), (Goblin, 12, 1), (FlyingEye, 10, 1.2)],
+        'enemies': [(Mushroom, 5, 2), (Goblin, 12, 1), (FlyingEye, 10, 1.2), (TeleportingMushroom, 6, 1)],
         'message': "Wave 5: Unrelenting Onslaught!"
     },
 
     # Final wave
     {
-        'enemies': [(EvilWizard, 2, 3), (Mushroom, 10, 1), (Goblin, 10, 1.5), (Skeleton, 20, 0.8)],
+        'enemies': [(EvilWizard, 2, 3), (Mushroom, 10, 1), (Goblin, 10, 1.5), (Skeleton, 20, 0.8), (TeleportingMushroom, 8, 1)],
         'message': "Wave 6: FINAL WAVE: Ultimate Challenge!"
     }
 ]
+
 
 class WaveManager:
     def __init__(self):
