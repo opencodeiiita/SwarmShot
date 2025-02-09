@@ -412,21 +412,18 @@ class Enemy:
 
     def draw(self, surface):
         """Draw the enemy, handling boss rendering separately."""
-        if isinstance(self, BigFlyingEye):
-            self.draw(surface)
-        else:
-            if self.current_action not in self.frames:
-                print(f"Warning: Missing animation frames for action '{self.current_action}' in {type(self).__name__}")
-                return  # Skip drawing if frames are missing
+        if self.current_action not in self.frames:
+            print(f"Warning: Missing animation frames for action '{self.current_action}' in {type(self).__name__}")
+            return  # Skip drawing if frames are missing
 
-            sprite = self.frames[self.current_action][self.current_frame]
+        sprite = self.frames[self.current_action][self.current_frame]
 
-            if not self.look_right:
-                sprite = pygame.transform.flip(sprite, True, False)
-            sprite_rect = sprite.get_rect(center=(self.x, self.y))
+        if not self.look_right:
+            sprite = pygame.transform.flip(sprite, True, False)
+        sprite_rect = sprite.get_rect(center=(self.x, self.y))
 
-            # Draw the sprite
-            surface.blit(sprite, sprite_rect.topleft)
+        # Draw the sprite
+        surface.blit(sprite, sprite_rect.topleft)
 
     def get_neighbors(self, pos):
         """Get valid neighboring positions for pathfinding"""
@@ -674,19 +671,7 @@ class FlyingEye(Enemy):
     
     def draw(self, surface):
         """Draw the current frame of the enemy on the screen."""
-        if self.current_action not in self.frames:
-            print(f"Warning: Missing animation frames for action '{self.current_action}' in {type(self).__name__}")
-            return  # Skip drawing if frames are missing
-
-        sprite = self.frames[self.current_action][self.current_frame]
-
-        if not self.look_right:
-            sprite = pygame.transform.flip(sprite, True, False)
-        sprite_rect = sprite.get_rect(center=(self.x, self.y))
-        surface.blit(sprite, sprite_rect.topleft)
-        # Draw the sprite
-        surface.blit(sprite, sprite_rect.topleft)
-
+        super().draw(surface)
         # Draw projectiles
         for projectile in self.projectiles:
             projectile_rect = pygame.Rect(projectile['x'], projectile['y'], 10, 10)
@@ -701,8 +686,6 @@ class FlyingEye(Enemy):
 class Goblin(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y, speed=0.75, health=75, damage=1.5, acceptance_radius=30, scale=1)
-        self.projectile_image = pygame.image.load("Sprites/Sprites_Effect/Bullets/23.png").convert_alpha()
-        self.projectile_image = pygame.transform.scale(self.projectile_image, (30, 18))  # Adjust size as needed
         self.load_frames()
     def distance_to(self, target):
         """Calculate Euclidean distance to a target (player or object)."""
@@ -726,39 +709,10 @@ class Goblin(Enemy):
             self.current_action = new_action
             self.current_frame = 0  # Reset animation frame
 
-        # Shoot projectiles if in range
-        if distance < self.ranged_attack_range:
-            self.shoot_projectile(player.x,player.y)
-
-    def draw(self, surface):
-        """Draw the current frame of the enemy on the screen."""
-        if self.current_action not in self.frames:
-            print(f"Warning: Missing animation frames for action '{self.current_action}' in {type(self).__name__}")
-            return  # Skip drawing if frames are missing
-
-        sprite = self.frames[self.current_action][self.current_frame]
-
-        if not self.look_right:
-            sprite = pygame.transform.flip(sprite, True, False)
-        sprite_rect = sprite.get_rect(center=(self.x, self.y))
-
-        # Draw the sprite
-        surface.blit(sprite, sprite_rect.topleft)
-
-        # Draw projectiles
-        for projectile in self.projectiles:
-            projectile_rect = pygame.Rect(projectile['x'], projectile['y'], 10, 10)
-
-            # Load the projectile image and animate it
-            rotated_projectile = pygame.transform.rotate(projectile['image'],-math.degrees(math.atan2(projectile['dy'], projectile['dx'])))
-            surface.blit(rotated_projectile, projectile_rect.topleft)
-
 
 class Mushroom(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y, speed=1.25, health=200, damage=2.5, acceptance_radius=40, scale=2)
-        self.projectile_image = pygame.image.load("Sprites/Sprites_Effect/Bullets/10.png").convert_alpha()
-        self.projectile_image = pygame.transform.scale(self.projectile_image, (30, 18))  # Adjust size as needed
         self.load_frames()
 
     def load_frames(self):
@@ -778,44 +732,19 @@ class Mushroom(Enemy):
             self.current_action = new_action
             self.current_frame = 0  # Reset animation frame
 
-        # Shoot projectiles if in range
-        if distance < self.ranged_attack_range:
-            self.shoot_projectile(player.x,player.y)
-
-    def draw(self, surface):
-        """Draw the current frame of the enemy on the screen."""
-        if self.current_action not in self.frames:
-            print(f"Warning: Missing animation frames for action '{self.current_action}' in {type(self).__name__}")
-            return  # Skip drawing if frames are missing
-
-        sprite = self.frames[self.current_action][self.current_frame]
-
-        if not self.look_right:
-            sprite = pygame.transform.flip(sprite, True, False)
-        sprite_rect = sprite.get_rect(center=(self.x, self.y))
-
-        # Draw the sprite
-        surface.blit(sprite, sprite_rect.topleft)# Draw projectiles
-        for projectile in self.projectiles:
-            projectile_rect = pygame.Rect(projectile['x'], projectile['y'], 10, 10)
-
-            # Load the projectile image and animate it
-            rotated_projectile = pygame.transform.rotate(projectile['image'],-math.degrees(math.atan2(projectile['dy'], projectile['dx'])))
-            surface.blit(rotated_projectile, projectile_rect.topleft)
-
-
-
-
 
 class Skeleton(Enemy):
     def __init__(self, x, y):
-        super().__init__(x, y, speed=0.75, health=100, damage=1, acceptance_radius=5, scale=1)
-        self.projectile_image = pygame.image.load("Sprites/Sprites_Effect/Bullets/01.png").convert_alpha()
-        self.projectile_image = pygame.transform.scale(self.projectile_image, (30, 18))  # Adjust size as needed
+        super().__init__(x, y, speed=1, health=100, damage=2, acceptance_radius=5, scale=1)
         self.load_frames()
 
+        self.shield_active = False
+        self.shield_duration = 180
+        self.shield_cooldown = 600
+        self.shield_timer = 0
+        self.shield_cooldown_timer = 0
+
     def load_frames(self):
-        """Load frames for each action of Skeleton."""
         self.frames['attack'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Skeleton/Attack.png", 150, 150, 1, 8)
         self.frames['death'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Skeleton/Death.png", 150, 150, 1, 4)
         self.frames['idle'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Skeleton/Idle.png", 150, 150, 1, 4)
@@ -823,39 +752,37 @@ class Skeleton(Enemy):
         self.frames['run'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Skeleton/Walk.png", 150, 150, 1, 4)
         self.frames['takehit'] = self.load_frame_sheet("Sprites/Sprites_Enemy/Skeleton/Take Hit.png", 150, 150, 1, 4)
 
+    def take_damage(self, damage):
+        if self.shield_active:
+            return
+        super().take_damage(damage)
+
+    def activate_shield(self):
+        if self.shield_cooldown_timer == 0:
+            self.shield_active = True
+            self.shield_timer = self.shield_duration
+            self.current_action = 'shield'
+            self.current_frame = 0
+
     def update_behavior(self, player):
-        """Skeleton chase and attack when close."""
         distance = ((player.x - self.x) ** 2 + (player.y - self.y) ** 2) ** 0.5
-        new_action = 'run' if distance > 150 else 'shield' if distance > self.acceptance_radius else 'attack'
 
-        if new_action != self.current_action:  # Only change if different
+        if self.shield_active:
+            self.shield_timer -= 1
+            if self.shield_timer <= 0:
+                self.shield_active = False
+                self.shield_cooldown_timer = self.shield_cooldown
+            return
+
+        if self.shield_cooldown_timer > 0:
+            self.shield_cooldown_timer -= 1
+        elif self.health < 50 and random.random() < 0.1:
+            self.activate_shield()
+
+        new_action = 'run' if distance > 150 else 'idle' if distance > self.acceptance_radius else 'attack'
+        if new_action != self.current_action:
             self.current_action = new_action
-            self.current_frame = 0  # Reset animation frame
-
-    def draw(self, surface):
-        """Draw the current frame of the enemy on the screen."""
-        if self.current_action not in self.frames:
-            print(f"Warning: Missing animation frames for action '{self.current_action}' in {type(self).__name__}")
-            return  # Skip drawing if frames are missing
-
-        sprite = self.frames[self.current_action][self.current_frame]
-
-        if not self.look_right:
-            sprite = pygame.transform.flip(sprite, True, False)
-        sprite_rect = sprite.get_rect(center=(self.x, self.y))
-
-        # Draw the sprite
-        surface.blit(sprite, sprite_rect.topleft)
-
-        # Draw projectiles
-        for projectile in self.projectiles:
-            projectile_rect = pygame.Rect(projectile['x'], projectile['y'], 10, 10)
-
-            # Load the projectile image and animate it
-            rotated_projectile = pygame.transform.rotate(projectile['image'],-math.degrees(math.atan2(projectile['dy'], projectile['dx'])))
-            surface.blit(rotated_projectile, projectile_rect.topleft)
-
-
+            self.current_frame = 0
 ##
 ## Special or modified Enemy Behaviour and classes shall be below this .
 ## I have created BigFlyingEye (mini-boss) for Level 2 .
@@ -1033,19 +960,9 @@ class BigFlyingEye(Enemy):
         self.look_right = player.x > self.x
 
     def draw(self, surface):
-        """Draw the boss enemy on the screen."""
-        if self.current_action not in self.frames:
-            print(f"Warning: Missing animation frames for action '{self.current_action}' in {type(self).__name__}")
-            return  # Skip drawing if frames are missing
-
-        sprite = self.frames[self.current_action][self.current_frame]
-
-        if not self.look_right:
-            sprite = pygame.transform.flip(sprite, True, False)
-        sprite_rect = sprite.get_rect(center=(self.x, self.y))
-
-        # Draw the sprite
-        surface.blit(sprite, sprite_rect.topleft)
+        """Draw the enemy and its energy projectiles."""
+        # Draw the boss
+        super().draw(surface)
 
         # Draw energy projectiles
         for projectile in self.energy_projectiles:
@@ -1129,3 +1046,21 @@ class DashingGoblin(Goblin):
             rotated_projectile = pygame.transform.rotate(projectile['image'],
                                                          -math.degrees(math.atan2(projectile['dy'], projectile['dx'])))
             surface.blit(rotated_projectile, projectile_rect.topleft)
+
+class TeleportingMushroom(Mushroom):
+
+    def __init__(self, x, y):
+            super().__init__(x, y)
+            self.teleport_timer = 0
+
+    def update(self, player):
+        super().update(player)
+        self.teleport_timer += 1
+        if self.teleport_timer > 200:
+            self.teleport(player)
+            self.teleport_timer = 0
+
+    def teleport(self, player):
+        """Teleport to a random position."""
+        self.x = player.x + random.randint(5, 50)
+        self.y = player.y + random.randint(5, 30)
