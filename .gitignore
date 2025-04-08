@@ -1,2 +1,41 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.env.bak/
+env/
+ENV/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# Code Runner temp files
+*.code-runner*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# PyInstaller / Py2exe build folders
+build/
+dist/
+*.spec
+
+# Logs
+*.log
+
+# Jupyter Notebook checkpoints (just in case)
+.ipynb_checkpoints/
+
+# Temporary files
+*.swp
+*.bak
+*.tmp
