@@ -2,7 +2,7 @@ import pygame
 import sys
 import random
 from player import Player
-from enemy import FlyingEye, Goblin, Mushroom, Skeleton, EvilWizard, BigFlyingEye, DashingGoblin, TeleportingMushroom
+from enemy import FlyingEye, Goblin, Mushroom, Skeleton, EvilWizard, BigFlyingEye, DashingGoblin,EnemySwarm, TeleportingMushroom
 from weapon import WeaponManager
 
 # Initialize Pygame
@@ -20,7 +20,7 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
 # Load tile and map resources
-DESERT_TILE = pygame.image.load('Sprites/Sprites_Environment/desert_tile.png')  # Replace 'desert_tile.png' with your desert tile image
+DESERT_TILE = pygame.image.load("Sprites/Sprites_Environment/desert_tile.png")  # Use forward slashes
 DESERT_TILE = pygame.transform.scale(DESERT_TILE, (TILE_SIZE, TILE_SIZE))  # Resize tile to 16x16
 
 # Set up display
@@ -50,7 +50,7 @@ waves = [
         'enemies': [(FlyingEye, 8, 1.5), (Goblin, 5, 2), (TeleportingMushroom, 3, 1)],
         'message': "Wave 3: Combined Forces!"
     },
-    
+
     # Mid-game challenge
     {
         'enemies': [(Skeleton, 10, 1.5), (FlyingEye, 15, 1), (TeleportingMushroom, 4, 1)],
@@ -60,13 +60,14 @@ waves = [
         'enemies': [(Mushroom, 5, 2), (Goblin, 12, 1), (FlyingEye, 10, 1.2), (TeleportingMushroom, 6, 1)],
         'message': "Wave 5: Unrelenting Onslaught!"
     },
-    
+
     # Final wave
     {
         'enemies': [(EvilWizard, 2, 3), (Mushroom, 10, 1), (Goblin, 10, 1.5), (Skeleton, 20, 0.8), (TeleportingMushroom, 8, 1)],
         'message': "Wave 6: FINAL WAVE: Ultimate Challenge!"
     }
 ]
+
 
 class WaveManager:
     def __init__(self):
@@ -78,17 +79,36 @@ class WaveManager:
         self.time_between_waves = 5  # Time in seconds between waves
         self.wave_completed = False
         self.wave_cooldown = 0
+        self.squads = []  # Added for squad management
+        self.obstacle_map = [[False for _ in range(GRID_SIZE)]
+                           for _ in range(GRID_SIZE)]  # For pathfinding
+    def _generate_obstacle_map(self):
+        """Generates an obstacle map for enemy pathfinding (placeholder implementation)."""
+        for y in range(GRID_SIZE):
+            for x in range(GRID_SIZE):
+                # Example: Mark edges as obstacles (modify as needed)
+                if x == 0 or y == 0 or x == GRID_SIZE - 1 or y == GRID_SIZE - 1:
+                    self.obstacle_map[y][x] = True
+    def _generate_patrol_path(self, enemy):
+        """Generates a simple patrol path for an enemy."""
+        path = []
+        for _ in range(5):  # Create a 5-point patrol path
+            x = random.randint(0, GRID_SIZE - 1) * TILE_SIZE
+            y = random.randint(0, GRID_SIZE - 1) * TILE_SIZE
+            path.append((x, y))
+        return path
+
 
     def start_wave(self):
         if self.wave_index >= len(waves):
             return False  # No more waves
-            
+
         wave_data = waves[self.wave_index]
         self.enemies = []
         self.wave_message = wave_data['message']
         self.message_timer = pygame.time.get_ticks()
         self.wave_completed = False
-        
+
         # Spawn enemies
         for enemy_type, count, spawn_rate in wave_data['enemies']:
             for _ in range(count):
@@ -97,19 +117,52 @@ class WaveManager:
                 enemy = enemy_type(x, y)
                 self.enemies.append(enemy)
                 enemy.spawn_rate = spawn_rate
-        
+
+        # Initialize obstacle map
+        self._generate_obstacle_map()
+
+        # Initialize squads
+        self._organize_into_squads(wave_data)
+
+        # Initialize AI systems for each enemy
+        for enemy in self.enemies:
+            enemy.obstacle_map = self.obstacle_map
+            enemy.patrol_path = self._generate_patrol_path(enemy)
+
         return True
 
+    def _organize_into_squads(self, wave_data):
+        """Organize enemies into coordinated squads"""
+        self.squads = []
+        squad_size = 4  # Enemies per squad
+
+        for i in range(0, len(self.enemies), squad_size):
+            squad = EnemySwarm(self.enemies[i:i+squad_size])
+            squad.strategy = random.choice(["flank", "swarm", "cover"])
+            self.squads.append(squad)
+
     def update(self):
+        for enemy in self.enemies:
+            if enemy.spawn_rate and not enemy.is_dead:
+                enemy.update(player)  # Changed from regular update
+
+                # Line of sight check
+                if enemy.has_line_of_sight(player):
+                    enemy.last_seen_player_pos = (player.x, player.y)
+
+                # Environmental awareness
+                if random.random() < 0.02:  # 2% chance per frame to replan path
+                    enemy.current_path = enemy.pathfind_to_player(player)
+
         # Clean up dead enemies that have completed their death animation
-        self.enemies = [enemy for enemy in self.enemies 
+        self.enemies = [enemy for enemy in self.enemies
                         if not (enemy.is_dead and enemy.death_animation_completed)]
-        
+
         # Check if wave is complete
         if len(self.enemies) == 0 and not self.wave_completed:
             self.wave_completed = True
             self.wave_cooldown = pygame.time.get_ticks()
-        
+
         # Start next wave after cooldown
         if self.wave_completed:
             if pygame.time.get_ticks() - self.wave_cooldown > self.time_between_waves * 1000:
@@ -117,16 +170,21 @@ class WaveManager:
                 if not self.start_wave():  # Returns False if no more waves
                     print("Game Completed!")
                     return
-        
+
         # Handle enemy spawning
         for enemy in self.enemies:
             if enemy.spawn_rate:
                 enemy.update(player)
-        
+
     def draw(self, surface):
+        if DEBUG_MODE:
+            for enemy in self.enemies:
+                enemy.draw_path(surface)
         # Draw all enemies
         for enemy in self.enemies:
             enemy.draw(surface)
+# Add debug mode toggle
+DEBUG_MODE = False
 
 # Initialize Wave Manager
 wave_manager = WaveManager()

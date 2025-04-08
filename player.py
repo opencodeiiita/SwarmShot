@@ -6,7 +6,7 @@ class Player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.speed = 3  # Movement speed
+        self.speed = 5  # Movement speed
         self.health= 100 # player health
 
         # Load the sprite sheet

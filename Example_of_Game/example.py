@@ -3,6 +3,7 @@ import random
 import math
 import sys
 
+
 # Initialize pygame
 pygame.init()
 
